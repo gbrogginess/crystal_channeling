@@ -1,0 +1,51 @@
+bendingangle = 143.78*urad;
+lCyrst = 2*mm;
+
+! crystal definition
+STF45: crystal, material = "G4_Si",
+	       		data = "../data/Si220pl",
+			shape = "box",
+			lengthY = 1*cm,
+			lengthX = 1*cm,
+			lengthZ = lCyrst,
+			sizeA = 5.43*ang, ! Unit cell a dimension [m]
+			sizeB = 5.43*ang, ! Unit cell b dimension [m]
+			sizeC = 5.43*ang, ! Unit cell c dimension [m]
+			alpha = 1, ! Interaxial angle alpha in units of pi/2
+			beta  = 1, ! Interaxial angle beta in units of pi/2
+			gamma = 1, ! Interaxial angle gamma in units of pi/2
+			spaceGroup = 227, ! Space grouping of lattice (integer)
+			bendingAngleYAxis = bendingangle, ! Angle that the crystal is bent about Y-axis [rad]
+			bendingAngleZAxis = 0; ! Angle that the crystal is bent about Z-axis [rad]
+
+! An offset is needed because the crystalcol length (lCrystCol) must be greater than the crystal length (lCryst)
+offset = 1*mm;
+lCrystCol = lCyrst + offset;
+
+col1 : crystalcol, l=lCrystCol, apertureType="rectangular", aper1=150*mm, aper2=150*mm,
+       crystalLeft="STF45",crystalAngleYAxisLeft=0.5*bendingangle, xsize=-0.5*cm;
+
+l1: line = (col1);
+use, l1;
+sample, range=col1, partID={2212};
+
+beam, particle="proton",
+      momentum=400*GeV,
+      distrType="gauss",
+      X0=-0.16*mm,
+      Xp0=0.15*urad,
+      Y0=0.14*mm,
+      Yp0=0.02*urad,
+      sigmaX=1*mm,
+      sigmaXp=10.68*urad,
+      sigmaY=0.72*mm,
+      sigmaYp=7.7*urad;
+
+option, worldMaterial="G4_Galactic";
+
+option, physicsList="completechannelling";
+
+option, stopSecondaries=1;
+option, minimumKineticEnergy=20*GeV;
+
+option, checkOverlaps=1;
