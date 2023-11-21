@@ -1,0 +1,51 @@
+bendingangle = 400*urad;
+lCyrst = 60*um;
+
+! crystal definition
+coolCryst: crystal, material = "G4_Si",
+	       		data = "../data/Si111pl",
+			shape = "box",
+			lengthY = 1*cm,
+			lengthX = 1*cm,
+			lengthZ = lCyrst,
+			sizeA = 5.43*ang, ! Unit cell a dimension [m]
+			sizeB = 5.43*ang, ! Unit cell b dimension [m]
+			sizeC = 5.43*ang, ! Unit cell c dimension [m]
+			alpha = 1, ! Interaxial angle alpha in units of pi/2
+			beta  = 1, ! Interaxial angle beta in units of pi/2
+			gamma = 1, ! Interaxial angle gamma in units of pi/2
+			spaceGroup = 227, ! Space grouping of lattice (integer)
+			bendingAngleYAxis = bendingangle, ! Angle that the crystal is bent about Y-axis [rad]
+			bendingAngleZAxis = 0; ! Angle that the crystal is bent about Z-axis [rad]
+
+! An offset is needed because the crystalcol length (lCrystCol) must be greater than the crystal length (lCryst)
+offset = 1*mm;
+lCrystCol = lCyrst + offset;
+
+col1 : crystalcol, l=lCrystCol, apertureType="rectangular", aper1=150*mm, aper2=150*mm,
+       crystalLeft="coolCryst",crystalAngleYAxisLeft=0.5*bendingangle, xsize=-0.5*cm;
+
+l1: line = (col1);
+use, l1;
+sample, range=col1, partID={11};
+
+beam, particle="electron",
+      momentum=6.3*GeV,
+      distrType="gauss",
+      X0=0*mm,
+      Xp0=0*urad,
+      Y0=0*mm,
+      Yp0=0*urad,
+      sigmaX=150*um,
+      sigmaXp=80*urad,
+      sigmaY=150*um,
+      sigmaYp=10*urad;
+
+option, worldMaterial="G4_Galactic";
+
+option, physicsList="completechannelling";
+
+option, stopSecondaries=1;
+option, minimumKineticEnergy=3*GeV;
+
+option, checkOverlaps=1;
